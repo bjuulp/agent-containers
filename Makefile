@@ -47,6 +47,13 @@ open-code: base
 		-t open-code \
 		-f open-code/Dockerfile open-code
 
+pi: base
+	@echo "Building pi"
+	$(CONTAINER_ENGINE) build \
+		--no-cache \
+		-t pi \
+		-f pi/Dockerfile pi
+
 clean:
 	@echo "Removing container images"
 	@for image in open-code claude-code openai-codex agent-base; do \

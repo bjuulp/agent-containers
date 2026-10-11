@@ -51,7 +51,6 @@ Give the agent its own deploy/user key rather than mounting your whole `~/.ssh`:
 
 ```bash
 ssh-keygen -t ed25519 -N '' -f ~/.ssh/opencode-agent -C "opencode-agent"
-# add ~/.ssh/ptaq-agent.pub to GitHub, then mount only that key pair:
   -v "$HOME/.ssh/opencode-agent:/home/node/.ssh/id_ed25519:ro" \
   -v "$HOME/.ssh/opencode-agent.pub:/home/node/.ssh/id_ed25519.pub:ro"
 ```

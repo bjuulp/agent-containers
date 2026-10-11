@@ -38,7 +38,8 @@ Tool-specific images extend this base with their unique requirements:
 agent-base
 ├── claude-code
 ├── open-code
-└── openai-codex
+├── openai-codex
+└── pi
 ```
 
 Each Dockerfile uses multi-stage builds to:
@@ -52,7 +53,7 @@ Each Dockerfile uses multi-stage builds to:
 The build system supports caching control options:
 
 ```bash
-# Build all containers (base, claude-code, open-code, openai-codex)
+# Build all containers (base, claude-code, open-code, openai-codex, pi)
 make all
 
 # Build just the base image
