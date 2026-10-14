@@ -57,7 +57,12 @@ COPY ./.bash_aliases /home/node/.bash_aliases
 COPY --chown=node:node ./pnpm-config.yaml /home/node/.config/pnpm/config.yaml
 
 # Install the zvec-grep MCP
+RUN npm config set allow-scripts=@zvec/zvec,node-llama-cpp,onnxruntime-node,sharp,protobufjs --location=user
 RUN npm install -g @zvec/zvec-grep
+
+# Install the codegraph MCP
+RUN npm install -g @colbymchenry/codegraph
+RUN codegraph install
 
 # This is a base image, not meant to be run directly
 CMD ["/bin/bash"]
