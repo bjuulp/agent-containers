@@ -12,6 +12,17 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends ${LOCAL_TOOLS} && \
   rm -rf /var/lib/apt/lists/*
 
+# Add any custom CA certs to the system trust store
+COPY ./tmp/ca-certificates/*.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
+# Have npm use the additional CA ca-certificates
+RUN echo "" > /usr/local/share/ca-certificates.pem
+RUN for cert in /usr/local/share/ca-certificates/*.crt; do \
+      cat "$cert" >> /usr/local/share/ca-certificates.pem ; \
+    done
+RUN npm config set cafile /usr/local/share/ca-certificates.pem
+
 # Configure the existing 'node' user
 # The node image usually creates the node user. We ensure it owns the app dir.
 # Remap 'node' to the host user's UID/GID so bind-mounted host dirs
@@ -36,12 +47,14 @@ USER node
 # This allows npm install -g without root permissions
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
 ENV PATH=$NPM_CONFIG_PREFIX/bin:$PATH
+ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates.pem
 
 # User environment configuration
 RUN mkdir -p /home/node/.npm-global && \
   npm config set prefix /home/node/.npm-global && \
   echo '' >> /home/node/.bashrc && \
-  echo 'export PATH=/home/node/.local/bin:/home/node/.npm-global/bin:$PATH' >> /home/node/.bashrc
+  echo 'export PATH=/home/node/.local/bin:/home/node/.npm-global/bin:$PATH' >> /home/node/.bashrc && \
+  echo 'export NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates.pem' >> /home/node/.bashrc
 
 # SSH dir must exist and be owned by 'node' before any key files are bind-mounted
 # into it; otherwise Docker creates it as root:root and ssh cannot write known_hosts.

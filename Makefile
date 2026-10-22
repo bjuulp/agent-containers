@@ -1,4 +1,4 @@
-.PHONY: all clean base pi open-code
+.PHONY: all clean base open-code pi ca-certificates
 
 # Determine container engine (podman or docker)
 CONTAINER_ENGINE := $(shell which podman 2>/dev/null || which docker 2>/dev/null)
@@ -18,7 +18,10 @@ endif
 
 all: base open-code pi
 
-base:
+ca-certificates:
+	make -C base
+
+base: ca-certificates
 	@echo "Building base image"
 	$(CONTAINER_ENGINE) build \
 		--build-arg HOST_UID=$(HOST_UID) \

@@ -48,7 +48,7 @@ Each Dockerfile uses multi-stage builds to:
 The build system supports caching control options:
 
 ```bash
-# Build all containers (base, claude-code, open-code, openai-codex, pi)
+# Build all containers (base, open-code, pi)
 make all
 
 # Build just the base image
