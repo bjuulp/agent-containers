@@ -41,44 +41,10 @@ exec docker run --rm --tty --interactive \
   -v "$HOME/.config/opencode/node_modules:/home/node/.config/opencode/node_modules" \
   -v "$HOME/.config/opencode/AGENTS.md:/home/node/.config/opencode/AGENTS.md" \
   -v "$HOME/.config/opencode/opencode.jsonc:/home/node/.config/opencode/opencode.jsonc:ro" \
+  -v "$HOME/.zvec:/home/node/.zvec" \
+  -v "$HOME/.codegraph:/home/node/.codegraph" \
   -v "$(pwd):/app" \
   open-code "$@"
-```
-
-If you want to restrict the agent further so that it can only access a few specific ports on your host,
-you can use the following script:
-
-```bash
-#! /usr/bin/bash
-#
-# This script sets up a firewall rule to prevent Docker containers from accessing the host machine, except for a few
-# specific ports (8080 and 13305 in this case - the two ports used by Strata and the Lemonade server).
-
-if [ $# -eq 0 ]; then
-  nft -f - <<'EOF'
-table inet docker_host_access {
-  chain input {
-    type filter hook input priority -5;
-    policy accept;
-
-    # Allow established connections
-    ct state established,related accept
-
-    # Allow containers to reach host port 8080
-    iifname "docker0" tcp dport 8080 accept
-    iifname "docker0" tcp dport 13305 accept
-
-    # Drop all other traffic from containers to the host
-    iifname "docker0" drop
-   }
-}
-EOF
-elif [ "$1" == "-d" ]; then
-  nft delete table inet docker_host_access
-else
-  echo "Usage: $0 [-d]"
-  echo "  -d: Delete the firewall rules, otherwise it will create them."
-fi
 ```
 
 ## GitHub access via a dedicated SSH key
