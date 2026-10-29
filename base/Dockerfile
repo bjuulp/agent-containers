@@ -5,7 +5,7 @@ ARG TARGETARCH
 
 # Single source of truth for apt-installed tooling. Override per-build with:
 #   docker build --build-arg LOCAL_TOOLS="..." -f base/Dockerfile base
-ARG LOCAL_TOOLS="git curl jq ripgrep vim nano make zip unzip ssh-client wget tree imagemagick ca-certificates gnupg procps build-essential python3 python3-pip redis-tools fd-find"
+ARG LOCAL_TOOLS="git curl jq ripgrep vim nano make zip unzip ssh-client wget tree imagemagick ca-certificates gnupg procps build-essential python3 python3-pip python3-venv redis-tools fd-find"
 
 # Install System Dependencies (as root)
 RUN apt-get update && \
@@ -40,6 +40,14 @@ RUN set -eux; \
     fi
 WORKDIR /app
 RUN chown -R node:node /app
+
+# Install the clangaroo MCP
+RUN python3 -m venv /opt/clangaroo-venv
+RUN git clone https://github.com/jasondk/clangaroo /tmp/clangaroo && \
+    /opt/clangaroo-venv/bin/pip3 install --upgrade pip && \
+    /opt/clangaroo-venv/bin/pip3 install /tmp/clangaroo && \
+    rm -rf /tmp/clangaroo && \
+    ln -s /opt/clangaroo-venv/bin/clangaroo /usr/local/bin/clangaroo
 
 USER node
 
