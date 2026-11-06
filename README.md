@@ -93,9 +93,14 @@ table inet docker_host_access {
     # Allow established connections
     ct state established,related accept
 
-    # Allow containers to reach host port 8080
+    # Allow containers to reach host port 8080 of a HTTP Proxy
     iifname "docker0" tcp dport 8080 accept
+
+    # Allow containers to reach host port 13305 for the lemonade AI server
     iifname "docker0" tcp dport 13305 accept
+
+    # Allow containers to reach host port 8888 for the unsloth server
+    iifname "docker0" tcp dport 8888 accept
 
     # Drop all other traffic from containers to the host
     iifname "docker0" drop

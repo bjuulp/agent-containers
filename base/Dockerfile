@@ -85,5 +85,14 @@ RUN npm install -g @zvec/zvec-grep
 RUN npm install -g @colbymchenry/codegraph
 RUN codegraph install
 
+# Extend user configuration with a HTTP proxy setup
+RUN echo 'export HTTP_PROXY=http://host.docker.internal:8080/' >> /home/node/.bashrc && \
+  echo 'export HTTPS_PROXY=https://host.docker.internal:8080/' >> /home/node/.bashrc && \
+  echo 'export http_proxy=http://host.docker.internal:8080/' >> /home/node/.bashrc && \
+  echo 'export https_proxy=https://host.docker.internal:8080/' >> /home/node/.bashrc && \
+  echo 'export NO_PROXY=localhost,127.0.0.1,host.docker.internal' >> /home/node/.bashrc && \
+  echo 'export no_proxy=localhost,127.0.0.1,host.docker.internal' >> /home/node/.bashrc && \
+  echo 'export NODE_USE_ENV_PROXY=1' >> /home/node/.bashrc
+
 # This is a base image, not meant to be run directly
 CMD ["/bin/bash"]

@@ -30,6 +30,25 @@ mkdir -p "$HOME/.local/state/opencode"
 mkdir -p "$HOME/.local/share/opencode"
 mkdir -p "$HOME/.config/opencode"
 
+if [ $# -eq 2 -a "$1" == "-p" ]; then
+  shift
+  tinyproxy -d -c "$1" &
+  TINYPROXY_PID=$!
+  echo "Started tinyproxy with PID $TINYPROXY_PID"
+  shift
+elif [ $# -ne 0 ]; then
+  echo "Usage: $0 [-p <tinyproxy_config.conf>]"
+fi
+
+stop_proxy() {
+  if [ -n "$TINYPROXY_PID" ]; then
+    echo "Killing tinyproxy with PID $TINYPROXY_PID"
+    kill -9 $TINYPROXY_PID
+  fi
+}
+
+trap stop_proxy EXIT
+
 exec docker run --rm --tty --interactive \
   --name "$NAME" \
   --add-host=host.docker.internal:host-gateway \
